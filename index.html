@@ -27,9 +27,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 0 15px;
-      background: rgba(255,255,255,0.6);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(0,0,0,0.1);
+      background: transparent;
       z-index: 100;
     }
 
@@ -44,14 +42,6 @@
       cursor: pointer;
       user-select: none;
       border: none;
-    }
-
-    .btn-clear {
-      background: rgba(0,0,0,0.05);
-      color: #333;
-    }
-
-    .btn-save {
       background: #007aff;
       color: white;
     }
@@ -96,12 +86,16 @@
       right: 10px;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(0,0,0,0.05);
-      border-radius: 12px;
-      padding: 3px 7px;
-      font-size: 12px;
       cursor: pointer;
       user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .insert-btn img {
+      width: 20px;
+      height: 20px;
     }
 
     canvas {
@@ -114,14 +108,20 @@
 </head>
 <body>
   <div class="top-bar">
-    <button class="circle-btn btn-clear" onclick="clearAll()">✕</button>
-    <button class="circle-btn btn-save" onclick="download()">✓</button>
+    <button class="circle-btn" onclick="clearAll()">
+      <img src="check.svg" alt="Очистити" style="width:16px; height:16px; transform: rotate(45deg);">
+    </button>
+    <button class="circle-btn" onclick="download()">
+      <img src="check.svg" alt="Зберегти" style="width:16px; height:16px;">
+    </button>
   </div>
 
   <div class="content">
     <div class="input-group">
       <input type="text" id="qrInput" placeholder="Текст для QR" oninput="generate()">
-      <div class="insert-btn" onclick="pasteFromClipboard()">Вставити</div>
+      <div class="insert-btn" onclick="pasteFromClipboard()">
+        <img src="paste.svg" alt="Вставити">
+      </div>
     </div>
     <div class="input-group">
       <textarea id="captionInput" placeholder="Підпис (довільний текст)" oninput="generate()"></textarea>
@@ -149,67 +149,64 @@
       return lines;
     }
 
-function generate() {
-  const qrText = document.getElementById("qrInput").value || "https://example.com";
-  const captionText = document.getElementById("captionInput").value || "";
+    function generate() {
+      const qrText = document.getElementById("qrInput").value || "https://example.com";
+      const captionText = document.getElementById("captionInput").value || "";
 
-  const lines = splitTextIntoLines(captionText, 12);
+      const lines = splitTextIntoLines(captionText, 12);
 
-  const tmpDiv = document.getElementById("tmpQR");
-  tmpDiv.innerHTML = "";
-  new QRCode(tmpDiv, { text: qrText, width: 256, height: 256 });
+      const tmpDiv = document.getElementById("tmpQR");
+      tmpDiv.innerHTML = "";
+      new QRCode(tmpDiv, { text: qrText, width: 256, height: 256 });
 
-  setTimeout(() => {
-    const qrEl = tmpDiv.querySelector("img") || tmpDiv.querySelector("canvas");
-    const qrSize = 256;
-    const canvas = document.getElementById("canvasFinal");
-    const ctx = canvas.getContext("2d");
+      setTimeout(() => {
+        const qrEl = tmpDiv.querySelector("img") || tmpDiv.querySelector("canvas");
+        const qrSize = 256;
+        const canvas = document.getElementById("canvasFinal");
+        const ctx = canvas.getContext("2d");
 
-    const lineHeights = [];
-    const tmpC = document.createElement("canvas");
-    const tmpCtx = tmpC.getContext("2d");
+        const lineHeights = [];
+        const tmpC = document.createElement("canvas");
+        const tmpCtx = tmpC.getContext("2d");
 
-    lines.forEach(line => {
-      let fs = 30;
-      tmpCtx.font = `${fs}px 'Bebas Neue'`;
-      let m = tmpCtx.measureText(line);
-      while (m.width < qrSize) {
-        fs++;
-        tmpCtx.font = `${fs}px 'Bebas Neue'`;
-        m = tmpCtx.measureText(line);
-      }
-      while (m.width > qrSize) {
-        fs--;
-        tmpCtx.font = `${fs}px 'Bebas Neue'`;
-        m = tmpCtx.measureText(line);
-      }
-      lineHeights.push(fs * 0.9); // зменшена відстань між рядками
-    });
+        lines.forEach(line => {
+          let fs = 30;
+          tmpCtx.font = `${fs}px 'Bebas Neue'`;
+          let m = tmpCtx.measureText(line);
+          while (m.width < qrSize) {
+            fs++;
+            tmpCtx.font = `${fs}px 'Bebas Neue'`;
+            m = tmpCtx.measureText(line);
+          }
+          while (m.width > qrSize) {
+            fs--;
+            tmpCtx.font = `${fs}px 'Bebas Neue'`;
+            m = tmpCtx.measureText(line);
+          }
+          lineHeights.push(fs * 0.9);
+        });
 
-    const totalH = qrSize + lineHeights.reduce((a,b)=>a+b,0) + 5; // маленький додатковий padding
+        const totalH = qrSize + lineHeights.reduce((a,b)=>a+b,0) + 5;
 
-    canvas.width = qrSize;
-    canvas.height = totalH;
+        canvas.width = qrSize;
+        canvas.height = totalH;
 
-    // ===== Білий фон =====
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // QR-код
-    ctx.drawImage(qrEl, 0, 0, qrSize, qrSize);
+        ctx.drawImage(qrEl, 0, 0, qrSize, qrSize);
 
-    // текст
-    let y = qrSize + 5; // відстань між QR та першим рядком
-    lines.forEach((line,i) => {
-      const fs = lineHeights[i] / 0.9;
-      ctx.font = `${fs}px 'Bebas Neue'`;
-      ctx.textBaseline = "top";
-      ctx.fillStyle = "#000";
-      ctx.fillText(line, 0, y);
-      y += lineHeights[i]; // менший line spacing
-    });
-  }, 100);
-}
+        let y = qrSize + 5;
+        lines.forEach((line,i) => {
+          const fs = lineHeights[i] / 0.9;
+          ctx.font = `${fs}px 'Bebas Neue'`;
+          ctx.textBaseline = "top";
+          ctx.fillStyle = "#000";
+          ctx.fillText(line, 0, y);
+          y += lineHeights[i];
+        });
+      }, 100);
+    }
 
     function download() {
       const link = document.createElement("a");
@@ -234,7 +231,6 @@ function generate() {
       }
     }
 
-    // автоматичний старт
     window.onload = generate;
   </script>
 </body>
