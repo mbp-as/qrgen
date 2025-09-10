@@ -1,236 +1,252 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <title>QR iOS 26 стиль</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      background: #f8f8fa;
-      font-family: 'Bebas Neue', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR iOS 26 стиль</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    background: #f8f8fa;
+    font-family: 'Bebas Neue', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
 
-    /* ===== TOP BAR ===== */
-    .top-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 15px;
-      background: transparent;
-      z-index: 100;
-    }
+  /* ===== TOP BAR ===== */
+  .top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    background: transparent;
+    z-index: 100;
+  }
 
+  .circle-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    user-select: none;
+    border: none;
+    color: white;
+  }
+
+  /* ===== CONTENT ===== */
+  .content {
+    margin-top: 70px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 15px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .input-group {
+    position: relative;
+    margin-bottom: 12px;
+    width: 90%;
+    max-width: 360px;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border-radius: 9999px;
+    border: none;
+    font-size: 16px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  textarea {
+    min-height: 70px;
+    border-radius: 20px;
+    resize: none;
+  }
+
+  .insert-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .insert-btn img {
+    width: 24px;
+    height: 24px;
+  }
+
+  canvas {
+    margin-top: 15px;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    background: white;
+    max-width: 90%;
+  }
+
+  @media (max-width: 400px) {
     .circle-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      cursor: pointer;
-      user-select: none;
-      border: none;
-      color: white;
+      width: 40px;
+      height: 40px;
     }
-
-    /* ===== CONTENT ===== */
-    .content {
-      margin-top: 70px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 20px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .input-group {
-      position: relative;
-      margin-bottom: 12px;
-      width: 280px;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 12px 45px 12px 15px;
-      border-radius: 9999px;
-      border: none;
-      font-size: 16px;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-
-    textarea {
-      min-height: 70px;
-      border-radius: 20px;
-      resize: none;
-    }
-
-    .insert-btn {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
     .insert-btn img {
       width: 20px;
       height: 20px;
     }
-
-    canvas {
-      margin-top: 15px;
-      border-radius: 20px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      background: white;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="top-bar">
-    <button class="circle-btn" onclick="clearAll()" style="background:#ff3b30;">
-      <img src="close.svg" alt="Очистити" style="width:16px; height:16px;">
-    </button>
-    <button class="circle-btn" onclick="download()" style="background:#007aff;">
-      <img src="check.svg" alt="Зберегти" style="width:16px; height:16px;">
-    </button>
-  </div>
 
-  <div class="content">
-    <div class="input-group">
-      <input type="text" id="qrInput" placeholder="Текст для QR" oninput="generate()">
-      <div class="insert-btn" onclick="pasteFromClipboard()">
-        <img src="paste.svg" alt="Вставити">
-      </div>
+<div class="top-bar">
+  <button class="circle-btn" onclick="clearAll()" style="background:#ff3b30;">
+    <img src="close.svg" alt="Очистити" style="width:16px; height:16px;">
+  </button>
+  <button class="circle-btn" onclick="download()" style="background:#007aff;">
+    <img src="check.svg" alt="Зберегти" style="width:16px; height:16px;">
+  </button>
+</div>
+
+<div class="content">
+  <div class="input-group">
+    <input type="text" id="qrInput" placeholder="Текст для QR" oninput="generate()">
+    <div class="insert-btn" onclick="pasteFromClipboard()">
+      <img src="paste.svg" alt="Вставити">
     </div>
-    <div class="input-group">
-      <textarea id="captionInput" placeholder="Підпис (довільний текст)" oninput="generate()"></textarea>
-    </div>
-    <canvas id="canvasFinal"></canvas>
-    <div id="tmpQR" style="display:none"></div>
   </div>
+  <div class="input-group">
+    <textarea id="captionInput" placeholder="Підпис (довільний текст)" oninput="generate()"></textarea>
+  </div>
+  <canvas id="canvasFinal"></canvas>
+  <div id="tmpQR" style="display:none"></div>
+</div>
 
-  <script>
-    function splitTextIntoLines(text, maxChars) {
-      const words = text.split(" ");
-      let lines = [];
-      let currentLine = "";
+<script>
+function splitTextIntoLines(text, maxChars) {
+  const words = text.split(" ");
+  let lines = [];
+  let currentLine = "";
 
-      words.forEach(word => {
-        if ((currentLine + " " + word).trim().length > maxChars) {
-          lines.push(currentLine.trim());
-          currentLine = word;
-        } else {
-          currentLine += " " + word;
-        }
-      });
-
-      if (currentLine.trim().length > 0) lines.push(currentLine.trim());
-      return lines;
+  words.forEach(word => {
+    if ((currentLine + " " + word).trim().length > maxChars) {
+      lines.push(currentLine.trim());
+      currentLine = word;
+    } else {
+      currentLine += " " + word;
     }
+  });
 
-    function generate() {
-      const qrText = document.getElementById("qrInput").value || "https://example.com";
-      const captionText = document.getElementById("captionInput").value || "";
+  if (currentLine.trim().length > 0) lines.push(currentLine.trim());
+  return lines;
+}
 
-      const lines = splitTextIntoLines(captionText, 12);
+function generate() {
+  const qrText = document.getElementById("qrInput").value || "https://example.com";
+  const captionText = document.getElementById("captionInput").value || "";
 
-      const tmpDiv = document.getElementById("tmpQR");
-      tmpDiv.innerHTML = "";
-      new QRCode(tmpDiv, { text: qrText, width: 256, height: 256 });
+  const lines = splitTextIntoLines(captionText, 12);
 
-      setTimeout(() => {
-        const qrEl = tmpDiv.querySelector("img") || tmpDiv.querySelector("canvas");
-        const qrSize = 256;
-        const canvas = document.getElementById("canvasFinal");
-        const ctx = canvas.getContext("2d");
+  const tmpDiv = document.getElementById("tmpQR");
+  tmpDiv.innerHTML = "";
+  new QRCode(tmpDiv, { text: qrText, width: 256, height: 256 });
 
-        const lineHeights = [];
-        const tmpC = document.createElement("canvas");
-        const tmpCtx = tmpC.getContext("2d");
+  setTimeout(() => {
+    const qrEl = tmpDiv.querySelector("img") || tmpDiv.querySelector("canvas");
+    const qrSize = Math.min(window.innerWidth * 0.9, 256);
+    const canvas = document.getElementById("canvasFinal");
+    const ctx = canvas.getContext("2d");
 
-        lines.forEach(line => {
-          let fs = 30;
-          tmpCtx.font = `${fs}px 'Bebas Neue'`;
-          let m = tmpCtx.measureText(line);
-          while (m.width < qrSize) {
-            fs++;
-            tmpCtx.font = `${fs}px 'Bebas Neue'`;
-            m = tmpCtx.measureText(line);
-          }
-          while (m.width > qrSize) {
-            fs--;
-            tmpCtx.font = `${fs}px 'Bebas Neue'`;
-            m = tmpCtx.measureText(line);
-          }
-          lineHeights.push(fs * 0.9);
-        });
+    const lineHeights = [];
+    const tmpC = document.createElement("canvas");
+    const tmpCtx = tmpC.getContext("2d");
 
-        const totalH = qrSize + lineHeights.reduce((a,b)=>a+b,0) + 5;
-
-        canvas.width = qrSize;
-        canvas.height = totalH;
-
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.drawImage(qrEl, 0, 0, qrSize, qrSize);
-
-        let y = qrSize + 5;
-        lines.forEach((line,i) => {
-          const fs = lineHeights[i] / 0.9;
-          ctx.font = `${fs}px 'Bebas Neue'`;
-          ctx.textBaseline = "top";
-          ctx.fillStyle = "#000";
-          ctx.fillText(line, 0, y);
-          y += lineHeights[i];
-        });
-      }, 100);
-    }
-
-    function download() {
-      const link = document.createElement("a");
-      link.download = "qr_ios26.png";
-      link.href = document.getElementById("canvasFinal").toDataURL();
-      link.click();
-    }
-
-    function clearAll() {
-      document.getElementById("qrInput").value = "";
-      document.getElementById("captionInput").value = "";
-      generate();
-    }
-
-    async function pasteFromClipboard() {
-      try {
-        const text = await navigator.clipboard.readText();
-        document.getElementById("qrInput").value = text;
-        generate();
-      } catch (err) {
-        alert("Не вдалося вставити текст з буфера");
+    lines.forEach(line => {
+      let fs = 30;
+      tmpCtx.font = `${fs}px 'Bebas Neue'`;
+      let m = tmpCtx.measureText(line);
+      while (m.width < qrSize) {
+        fs++;
+        tmpCtx.font = `${fs}px 'Bebas Neue'`;
+        m = tmpCtx.measureText(line);
       }
-    }
+      while (m.width > qrSize) {
+        fs--;
+        tmpCtx.font = `${fs}px 'Bebas Neue'`;
+        m = tmpCtx.measureText(line);
+      }
+      lineHeights.push(fs * 0.9);
+    });
 
-    window.onload = generate;
-  </script>
+    const totalH = qrSize + lineHeights.reduce((a,b)=>a+b,0) + 5;
+
+    canvas.width = qrSize;
+    canvas.height = totalH;
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.drawImage(qrEl, 0, 0, qrSize, qrSize);
+
+    let y = qrSize + 5;
+    lines.forEach((line,i) => {
+      const fs = lineHeights[i] / 0.9;
+      ctx.font = `${fs}px 'Bebas Neue'`;
+      ctx.textBaseline = "top";
+      ctx.fillStyle = "#000";
+      ctx.fillText(line, 0, y);
+      y += lineHeights[i];
+    });
+  }, 100);
+}
+
+function download() {
+  const link = document.createElement("a");
+  link.download = "qr_ios26.png";
+  link.href = document.getElementById("canvasFinal").toDataURL();
+  link.click();
+}
+
+function clearAll() {
+  document.getElementById("qrInput").value = "";
+  document.getElementById("captionInput").value = "";
+  generate();
+}
+
+async function pasteFromClipboard() {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById("qrInput").value = text;
+    generate();
+  } catch (err) {
+    alert("Не вдалося вставити текст з буфера");
+  }
+}
+
+window.onload = generate;
+</script>
+
 </body>
 </html>
